@@ -1,0 +1,19 @@
+name: 'PRs Close Teamwork Tasks'
+author: 'Bob VanLonkhuyzen'
+description: 'An Action to mark a Teamwork task as complete when its PR is merged'
+inputs:
+  task_id:
+    description: The ID of the task to mark as complete in Teamwork
+    required: true
+  domain:
+    description: The domain of your Teamwork site. Follows the format <company>.teamwork.com for US sites, or <company>.eu.teamwork.com for EU sites
+    required: true
+  api_key:
+    description: Your Teamwork API key
+    required: true
+branding:
+  icon: 'check-circle'
+  color: 'purple'
+runs:
+  using: 'node16'
+  main: 'main.js'
