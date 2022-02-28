@@ -19,4 +19,4 @@ const putOpts = {
 
 fetch(url, putOpts)
   .then(response => console.log(response))
-  .catch(err => console.error(err));
+  .catch(err => core.setFailed(err.message));
