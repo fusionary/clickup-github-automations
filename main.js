@@ -18,5 +18,6 @@ const putOpts = {
 };
 
 fetch(url, putOpts)
-  .then(response => console.log(response))
+  .then(response => response.json())
+  .then(data => {if (data.status != 204) {throw "Server returned " + data.status}})
   .catch(err => core.setFailed(err.message));
