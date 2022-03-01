@@ -5,7 +5,7 @@ const github = require('@actions/github');
 const endpoint = "/projects/api/v3/tasks/"
 let url = "https://" + core.getInput('domain') + endpoint + core.getInput('task_id') + '/complete.json';
 
-// Send GET request to get the current contents of the notebook
+// Sends a PUT request to Teamwork to set the task as complete
 const putOpts = {
   method: 'PUT',
   headers: {
