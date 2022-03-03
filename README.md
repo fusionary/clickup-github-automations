@@ -19,6 +19,10 @@ An Action to mark a Teamwork task as complete when its PR is merged
 ## Example usage
 
 ```
+on:
+  pull_request:
+  types: [closed]
+
 jobs:
   test:
     runs-on: ubuntu-latest

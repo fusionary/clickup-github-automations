@@ -1,6 +1,6 @@
 const core = require('@actions/core');
 const fetch = require('node-fetch');
-const github = require('@actions/github');
+const { Context } = require('@actions/github/lib/context');
 
 const endpoint = "/projects/api/v3/tasks/"
 let url = "https://" + core.getInput('domain') + endpoint + core.getInput('task_id') + '/complete.json';
@@ -20,3 +20,6 @@ const putOpts = {
 fetch(url, putOpts)
   .then(response => {if (response.status != 204) {throw "Server returned " + response.status}})
   .catch(err => core.setFailed(err.message));
+
+const context = new Context();
+console.log(context.payload.pull_request?.body);
