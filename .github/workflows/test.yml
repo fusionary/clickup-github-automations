@@ -3,8 +3,8 @@ name: Test Action
 # Controls when the action will run. Workflow runs when a commit is pushed to
 # the main branch
 on:
-  push:
-    branches: [ main ]
+  pull_request:
+    types: [closed]
 
 jobs:
   test:
