@@ -3,12 +3,12 @@ const github = require('@actions/github')
 const fetch = require('node-fetch')
 
 const prBody = github.context.payload.pull_request?.body
-console.log(prBody)
 if (!prBody) {
   core.setFailed('Could not retrieve PR body')
   return
 }
 const taskID = prBody.slice(0, prBody.indexOf('\n'))
+console.log(taskID)
 const endpoint = "/projects/api/v3/tasks/"
 let url = "https://" + core.getInput('domain') + endpoint + core.getInput('task_id') + '/complete.json'
 
