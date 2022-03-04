@@ -30,7 +30,7 @@ jobs:
     steps:
     - uses: Aetheron/pr-close-teamwork-task@main
       with:
-        task_id: 1234567
+        task_id: 1234567 #Optional, if you need to manually set the id
         domain: company.teamwork.com
         api_key: ${{ secrets.TEAMWORK_API_KEY }}
 ```

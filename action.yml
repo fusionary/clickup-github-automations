@@ -4,7 +4,7 @@ description: 'An Action to mark a Teamwork task as complete when its PR is merge
 inputs:
   task_id:
     description: The ID of the task to mark as complete in Teamwork
-    required: true
+    required: false
   domain:
     description: The domain of your Teamwork site. Follows the format <company>.teamwork.com for US sites, or <company>.eu.teamwork.com for EU sites
     required: true
