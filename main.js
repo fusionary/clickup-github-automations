@@ -6,7 +6,7 @@ const prBody = github.context.payload.pull_request?.body
 console.log(github.context)
 if (!prBody) {
   core.setFailed('Could not retrieve PR body')
-  break
+  return
 }
 const taskID = prBody.slice(0, prBody.indexOf('\n'))
 const endpoint = "/projects/api/v3/tasks/"
