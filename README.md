@@ -6,7 +6,7 @@ An Action to mark a Teamwork task as complete when its PR is merged
 
 ## `task_id`
 
-**Required** The ID of the task to mark as complete in Teamwork
+**Optional** The ID of the task to mark as complete in Teamwork. If unset, the first line of the PR description will be parsed for a task ID
 
 ## `domain`
 
@@ -30,7 +30,6 @@ jobs:
     steps:
     - uses: Aetheron/pr-close-teamwork-task@main
       with:
-        task_id: 1234567 #Optional, if you need to manually set the id
         domain: company.teamwork.com
         api_key: ${{ secrets.TEAMWORK_API_KEY }}
 ```

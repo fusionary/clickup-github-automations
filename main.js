@@ -31,3 +31,5 @@ const putOpts = {
 fetch(url, putOpts)
   .then(response => {if (response.status != 204) {throw 'Server returned ' + response.status}})
   .catch(err => core.setFailed(err.message))
+
+  core.info('Successfully set task as completed')
