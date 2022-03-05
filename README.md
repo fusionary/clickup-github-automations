@@ -21,7 +21,7 @@ An Action to mark a Teamwork task as complete when its PR is merged
 ```
 on:
   pull_request:
-  types: [closed]
+    types: [closed]
 
 jobs:
   test:

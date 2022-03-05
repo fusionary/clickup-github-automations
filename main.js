@@ -2,14 +2,21 @@ const core = require('@actions/core')
 const github = require('@actions/github')
 const fetch = require('node-fetch')
 
-const prBody = github.context.payload.pull_request?.body
-
 let taskID = core.getInput('task_id')
-  || prBody.slice(0, prBody.indexOf('\n')).replace('#', '')
-
 if (!taskID) {
-  core.setFailed('Could not retrieve PR body')
-  return
+  // No task override. Look for task id in PR description
+  const prBody = github.context.payload.pull_request?.body
+  if (prBody) {
+    taskID = prBody.slice(0, prBody.indexOf('\n')).replace('#', '')
+    // If there's no description or the first line isn't a task id
+    if (taskID === '') {
+      // Description may have been intentionally left empty. Exit with success code
+      return
+    }
+  } else {
+    core.setFailed('Could not retrieve PR body')
+    return
+  }
 }
 
 core.info('Found task ID ' + taskID)
@@ -30,6 +37,9 @@ const putOpts = {
 
 fetch(url, putOpts)
   .then(response => {if (response.status != 204) {throw 'Server returned ' + response.status}})
-  .catch(err => core.setFailed(err.message))
+  .catch(err => {
+    core.setFailed(err.message)
+    return
+  })
 
-  core.info('Successfully set task as completed')
+core.info('Successfully set task as completed')
