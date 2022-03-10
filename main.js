@@ -9,13 +9,14 @@ if (!taskID) {
   if (prBody) {
     taskID = prBody.slice(0, prBody.indexOf('\n')).replace('#', '')
     // If there's no description or the first line isn't a task id
-    if (taskID === '') {
-      // Description may have been intentionally left empty. Exit with success code
-      return
+    if (taskID === '' || isNan(parseInt(taskID))) {
+      // Description may have been intentionally left empty or not include
+      // a task id. Exit with success code
+      process.exit(0)
     }
   } else {
     core.setFailed('Could not retrieve PR body')
-    return
+    process.exit(0)
   }
 }
 
