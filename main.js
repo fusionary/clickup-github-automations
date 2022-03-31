@@ -21,26 +21,82 @@ if (!taskID) {
 }
 
 core.info('Found task ID ' + taskID)
-const endpoint = '/projects/api/v3/tasks/'
-let url = 'https://' + core.getInput('domain') + endpoint + taskID + '/complete.json'
 
-// Sends a PUT request to Teamwork to set the task as complete
-const putOpts = {
-  method: 'PUT',
-  headers: {
-    'Authorization': `Basic ${core.getInput('api_key')}`,
-    'Accept': 'application/json',
-    'Content-Type': 'application/json'
-  },
-  redirect: 'follow',
-  body: 'false'
+// Sends a GET request to Teamwork to find the "code review" tag
+const tagEndpoint = '/projects/api/v3/tags'
+let tagUrl = 'https://' + core.getInput('domain') + taskEndpoint + taskID + '.json?projectIds=0&searchTerm=code review'
+getRequest(tagUrl)
+
+// Sends a PATCH request to Teamwork to set the tag on the task
+const taskEndpoint = '/projects/api/v3/tasks'
+let taskUrl = 'https://' + core.getInput('domain') + taskEndpoint + taskID + '.json'
+patchRequest(taskUrl, '{"tagIds": []}');
+
+core.info('Successfully updated task')
+
+
+
+
+
+function getRequest(url) {
+  // Sends a GET request to Teamwork to 
+  const getOpts = {
+    method: 'GET',
+    headers: {
+      'Authorization': `Basic ${core.getInput('api_key')}`,
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    redirect: 'follow',
+    body: false
+  }
+
+  fetch(url, getOpts)
+    .then(response => {if (response.status != 200) {throw 'Server returned ' + response.status}})
+    .catch(err => {
+      core.setFailed(err.message)
+      return
+    })
 }
 
-fetch(url, putOpts)
-  .then(response => {if (response.status != 204) {throw 'Server returned ' + response.status}})
-  .catch(err => {
-    core.setFailed(err.message)
-    return
-  })
+function patchRequest(url, body) {
+  // Sends a PATCH request to Teamwork to 
+  const patchOpts = {
+    method: 'PATCH',
+    headers: {
+      'Authorization': `Basic ${core.getInput('api_key')}`,
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    redirect: 'follow',
+    body: body
+  }
 
-core.info('Successfully set task as completed')
+  fetch(url, patchOpts)
+    .then(response => {if (response.status != 200) {throw 'Server returned ' + response.status}})
+    .catch(err => {
+      core.setFailed(err.message)
+      return
+    })
+}
+
+function putRequest(url, body) {
+  // Sends a PUT request to Teamwork to 
+  const putOpts = {
+    method: 'PUT',
+    headers: {
+      'Authorization': `Basic ${core.getInput('api_key')}`,
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    redirect: 'follow',
+    body: body
+  }
+
+  fetch(url, putOpts)
+    .then(response => {if (response.status != 200) {throw 'Server returned ' + response.status}})
+    .catch(err => {
+      core.setFailed(err.message)
+      return
+    })
+}
