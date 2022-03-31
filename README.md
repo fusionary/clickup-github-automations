@@ -1,6 +1,6 @@
 # PRs Close Teamwork Tasks
 
-An Action to mark a Teamwork task as complete when its PR is merged
+An Action to tag a Teamwork task and move its card when its PR is merged
 
 ## Inputs
 
