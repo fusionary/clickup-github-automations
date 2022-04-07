@@ -1,6 +1,6 @@
 const core = require('@actions/core')
 const github = require('@actions/github')
-const fetch = require('node-fetch')
+const {getRequest, patchRequest, putRequest} = require('./functions.js')
 
 let taskID = core.getInput('task_id')
 if (!taskID) {
@@ -24,79 +24,21 @@ core.info('Found task ID ' + taskID)
 
 // Sends a GET request to Teamwork to find the "code review" tag
 const tagEndpoint = '/projects/api/v3/tags'
-let tagUrl = 'https://' + core.getInput('domain') + taskEndpoint + taskID + '.json?projectIds=0&searchTerm=code review'
-getRequest(tagUrl)
+let tagUrl = 'https://' + core.getInput('domain') + tagEndpoint + taskID + '.json?projectIds=0&searchTerm=code review'
+tag = await getRequest(tagUrl)
+tagID = tag.tags[0].id
+
+// Sends a PUT request to Teamwork to add the "code review" tag to the task
+const taskEndpoint = '/projects/api/v3/tasks/'
+let taskTagUrl = 'https://' + core.getInput('domain') + taskEndpoint + taskID + '/tags.json'
+await putRequest(taskTagUrl, `{"replaceExistingTags": false, "tagIds": [${tagID}]}`)
 
 // Sends a PATCH request to Teamwork to set the tag on the task
-const taskEndpoint = '/projects/api/v3/tasks'
 let taskUrl = 'https://' + core.getInput('domain') + taskEndpoint + taskID + '.json'
-patchRequest(taskUrl, '{"tagIds": []}');
+await patchRequest(taskUrl, '{"tagIds": []}')
+
+
+
+
 
 core.info('Successfully updated task')
-
-
-
-
-
-function getRequest(url) {
-  // Sends a GET request to Teamwork to 
-  const getOpts = {
-    method: 'GET',
-    headers: {
-      'Authorization': `Basic ${core.getInput('api_key')}`,
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
-    },
-    redirect: 'follow',
-    body: false
-  }
-
-  fetch(url, getOpts)
-    .then(response => {if (response.status != 200) {throw 'Server returned ' + response.status}})
-    .catch(err => {
-      core.setFailed(err.message)
-      return
-    })
-}
-
-function patchRequest(url, body) {
-  // Sends a PATCH request to Teamwork to 
-  const patchOpts = {
-    method: 'PATCH',
-    headers: {
-      'Authorization': `Basic ${core.getInput('api_key')}`,
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
-    },
-    redirect: 'follow',
-    body: body
-  }
-
-  fetch(url, patchOpts)
-    .then(response => {if (response.status != 200) {throw 'Server returned ' + response.status}})
-    .catch(err => {
-      core.setFailed(err.message)
-      return
-    })
-}
-
-function putRequest(url, body) {
-  // Sends a PUT request to Teamwork to 
-  const putOpts = {
-    method: 'PUT',
-    headers: {
-      'Authorization': `Basic ${core.getInput('api_key')}`,
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
-    },
-    redirect: 'follow',
-    body: body
-  }
-
-  fetch(url, putOpts)
-    .then(response => {if (response.status != 200) {throw 'Server returned ' + response.status}})
-    .catch(err => {
-      core.setFailed(err.message)
-      return
-    })
-}
