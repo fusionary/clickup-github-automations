@@ -40,6 +40,8 @@ async function patchRequest(url, body) {
   if (response.status != 200) {
     core.setFailed('Server returned ' + response.status)
     process.exit(1)
+  } else {
+    return await response.json();
   }
 }
 
@@ -60,6 +62,8 @@ async function putRequest(url, body) {
   if (response.status != 200) {
     core.setFailed('Server returned ' + response.status)
     process.exit(1)
+  } else {
+    return await response.json();
   }
 }
 
