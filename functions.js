@@ -3,7 +3,7 @@ const github = require('@actions/github')
 const fetch = require('node-fetch')
 
 async function getRequest(url) {
-  // Sends a GET request to Teamwork to 
+  // Sends a GET request to Teamwork
   const getOpts = {
     method: 'GET',
     headers: {
@@ -24,7 +24,7 @@ async function getRequest(url) {
 }
 
 async function patchRequest(url, body) {
-  // Sends a PATCH request to Teamwork to 
+  // Sends a PATCH request to Teamwork
   const patchOpts = {
     method: 'PATCH',
     headers: {
@@ -46,7 +46,7 @@ async function patchRequest(url, body) {
 }
 
 async function putRequest(url, body) {
-  // Sends a PUT request to Teamwork to 
+  // Sends a PUT request to Teamwork
   const putOpts = {
     method: 'PUT',
     headers: {
@@ -67,4 +67,26 @@ async function putRequest(url, body) {
   }
 }
 
-module.exports = {getRequest, patchRequest, putRequest}
+async function postRequest(url, body) {
+  // Sends a POST request to Teamwork
+  const postOpts = {
+    method: 'POST',
+    headers: {
+      'Authorization': `Basic ${core.getInput('api_key')}`,
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    redirect: 'follow',
+    body: body
+  }
+
+  let response = await fetch(url, postOpts)
+  if (response.status != 200) {
+    core.setFailed('Server returned ' + response.status)
+    process.exit(1)
+  } else {
+    return await response.json();
+  }
+}
+
+module.exports = {getRequest, patchRequest, putRequest, postRequest}

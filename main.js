@@ -1,6 +1,6 @@
 const core = require('@actions/core')
 const github = require('@actions/github')
-const {getRequest, patchRequest, putRequest} = require('./functions.js')
+const {getRequest, patchRequest, putRequest, postRequest} = require('./functions.js')
 
 let taskID = core.getInput('task_id')
 if (!taskID) {
@@ -22,6 +22,11 @@ if (!taskID) {
 
 core.info('Found task ID ' + taskID)
 
+// Sends a GET request to Teamwork to retrieve info about the task
+const taskEndpoint = '/projects/api/v3/tasks/'
+let taskUrl = 'https://' + core.getInput('domain') + taskEndpoint + taskID + '.json'
+task = await getRequest(taskUrl)
+
 // Sends a GET request to Teamwork to find the "code review" tag
 const tagEndpoint = '/projects/api/v3/tags'
 let tagUrl = 'https://' + core.getInput('domain') + tagEndpoint + taskID + '.json?projectIds=0&searchTerm=code review'
@@ -29,15 +34,33 @@ tag = await getRequest(tagUrl)
 tagID = tag.tags[0].id
 
 // Sends a PUT request to Teamwork to add the "code review" tag to the task
-const taskEndpoint = '/projects/api/v3/tasks/'
-let taskTagUrl = 'https://' + core.getInput('domain') + taskEndpoint + taskID + '/tags.json'
-await putRequest(taskTagUrl, `{"replaceExistingTags": false, "tagIds": [${tagID}]}`)
+// let taskTagUrl = 'https://' + core.getInput('domain') + taskEndpoint + taskID + '/tags.json'
+// await putRequest(taskTagUrl, `{"replaceExistingTags": false, "tagIds": [${tagID}]}`)
 
 // Sends a PATCH request to Teamwork to set the tag on the task
-let taskUrl = 'https://' + core.getInput('domain') + taskEndpoint + taskID + '.json'
-await patchRequest(taskUrl, '{"tagIds": []}')
+// let taskUrl = 'https://' + core.getInput('domain') + taskEndpoint + taskID + '.json'
+// await patchRequest(taskUrl, '{"tagIds": []}')
 
+// Sends a GET request to Teamwork to find the "code review" column
+let columnID = 0
+const boardEndpoint = '/projects/'
+let boardUrl = 'https://' + core.getInput('domain') + boardEndpoint + projectID + '/boards/columns.json'
+columns = await getRequest(boardUrl)
+columns.forEach(column => {
+  if (column.name.toLowerCase() == 'code review') {
+    columnID = column.id
+  }
+});
 
+// Check if the task has a card
+if (task.task.card !== null) {
+  // Sends a PUT request to Teamwork to move the card to the "code review" column
+  const cardEndpoint = 'boards/columns/cards/'
+  let cardUrl = 'https://' + core.getInput('domain') + cardEndpoint + cardID + 'move.json'
+  await putRequest(cardUrl, '{"cardId": ' + task.task.card.id + ',"positionAfterId": 0, "columnId": ' + columnID + '}')
+} else {
+  await postRequest(cardUrl, '{"card": {"taskId": ' + taskID + '},"positionAfterId": 0}')
+}
 
 
 
