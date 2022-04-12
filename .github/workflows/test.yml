@@ -4,15 +4,15 @@ name: Test Action
 # the main branch
 on:
   pull_request:
-    types: [closed]
+    types: [opened]
 
 jobs:
   test:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: Aetheron/pr-close-teamwork-task@main
+    - uses: fusionary/pr-teamwork-task-tag-and-move-card@main
       with:
-        task_id: 12345
-        domain: stoplight.io/mocks/teamwork-dot-com/teamwork/42258910
+        task_id: 26801523
+        domain: fusionary.teamwork.com
         api_key: ${{ secrets.TEAMWORK_API_KEY }}
