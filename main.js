@@ -22,14 +22,14 @@ if (!taskID) {
 
 core.info('Found task ID ' + taskID)
 
-let cardName = ''
+let columnName = ''
 switch (github.event.action) {
   case 'opened':
-    cardName = 'code review'
+    columnName = 'code review'
     break;
 
   case 'closed':
-    cardName = 'qa on staging'
+    columnName = 'qa on stg'
     break;
 
   default:
@@ -39,21 +39,17 @@ switch (github.event.action) {
 // Sends a GET request to Teamwork to retrieve info about the task
 const taskEndpoint = '/projects/api/v3/tasks/'
 let taskUrl = 'https://' + core.getInput('domain') + taskEndpoint + taskID + '.json'
-task = await getRequest(taskUrl)
+const task = await getRequest(taskUrl)
 
 // Sends a GET request to Teamwork to find the "code review" tag
 const tagEndpoint = '/projects/api/v3/tags'
-let tagUrl = 'https://' + core.getInput('domain') + tagEndpoint + taskID + '.json?projectIds=0&searchTerm=' + cardName
+let tagUrl = 'https://' + core.getInput('domain') + tagEndpoint + taskID + '.json?projectIds=0&searchTerm=code review'
 tag = await getRequest(tagUrl)
 tagID = tag.tags[0].id
 
 // Sends a PUT request to Teamwork to add the "code review" tag to the task
-// let taskTagUrl = 'https://' + core.getInput('domain') + taskEndpoint + taskID + '/tags.json'
-// await putRequest(taskTagUrl, `{"replaceExistingTags": false, "tagIds": [${tagID}]}`)
-
-// Sends a PATCH request to Teamwork to set the tag on the task
-// let taskUrl = 'https://' + core.getInput('domain') + taskEndpoint + taskID + '.json'
-// await patchRequest(taskUrl, '{"tagIds": []}')
+let taskTagUrl = 'https://' + core.getInput('domain') + taskEndpoint + taskID + '/tags.json'
+await putRequest(taskTagUrl, `{"replaceExistingTags": false, "tagIds": [${tagID}]}`)
 
 // Sends a GET request to Teamwork to find the "code review" column
 let columnID = 0
@@ -61,7 +57,7 @@ const boardEndpoint = '/projects/'
 let boardUrl = 'https://' + core.getInput('domain') + boardEndpoint + projectID + '/boards/columns.json'
 columns = await getRequest(boardUrl)
 columns.forEach(column => {
-  if (column.name.toLowerCase() == cardName) {
+  if (column.name.toLowerCase() == columnName) {
     columnID = column.id
   }
 });
