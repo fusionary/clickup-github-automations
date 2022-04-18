@@ -22,6 +22,20 @@ if (!taskID) {
 
 core.info('Found task ID ' + taskID)
 
+let cardName = ''
+switch (github.event.action) {
+  case 'opened':
+    cardName = 'code review'
+    break;
+
+  case 'closed':
+    cardName = 'qa on staging'
+    break;
+
+  default:
+    break;
+}
+
 // Sends a GET request to Teamwork to retrieve info about the task
 const taskEndpoint = '/projects/api/v3/tasks/'
 let taskUrl = 'https://' + core.getInput('domain') + taskEndpoint + taskID + '.json'
@@ -29,7 +43,7 @@ task = await getRequest(taskUrl)
 
 // Sends a GET request to Teamwork to find the "code review" tag
 const tagEndpoint = '/projects/api/v3/tags'
-let tagUrl = 'https://' + core.getInput('domain') + tagEndpoint + taskID + '.json?projectIds=0&searchTerm=code review'
+let tagUrl = 'https://' + core.getInput('domain') + tagEndpoint + taskID + '.json?projectIds=0&searchTerm=' + cardName
 tag = await getRequest(tagUrl)
 tagID = tag.tags[0].id
 
@@ -47,7 +61,7 @@ const boardEndpoint = '/projects/'
 let boardUrl = 'https://' + core.getInput('domain') + boardEndpoint + projectID + '/boards/columns.json'
 columns = await getRequest(boardUrl)
 columns.forEach(column => {
-  if (column.name.toLowerCase() == 'code review') {
+  if (column.name.toLowerCase() == cardName) {
     columnID = column.id
   }
 });
