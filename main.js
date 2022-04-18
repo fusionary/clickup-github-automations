@@ -45,11 +45,13 @@ const task = await getRequest(taskUrl)
 const tagEndpoint = '/projects/api/v3/tags'
 let tagUrl = 'https://' + core.getInput('domain') + tagEndpoint + taskID + '.json?projectIds=0&searchTerm=code review'
 tag = await getRequest(tagUrl)
-tagID = tag.tags[0].id
+if (tag.tags.length > 0) {
+  const tagID = tag.tags[0].id
 
-// Sends a PUT request to Teamwork to add the "code review" tag to the task
-let taskTagUrl = 'https://' + core.getInput('domain') + taskEndpoint + taskID + '/tags.json'
-await putRequest(taskTagUrl, `{"replaceExistingTags": false, "tagIds": [${tagID}]}`)
+  // Sends a PUT request to Teamwork to add the "code review" tag to the task
+  let taskTagUrl = 'https://' + core.getInput('domain') + taskEndpoint + taskID + '/tags.json'
+  await putRequest(taskTagUrl, `{"replaceExistingTags": false, "tagIds": [${tagID}]}`)
+}
 
 // Sends a GET request to Teamwork to find the "code review" column
 let columnID = 0
