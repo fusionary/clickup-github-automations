@@ -31,4 +31,13 @@ describe('test REST request', function () {
     let card = await getRequest('https://fusionary.teamwork.com/boards/columns/cards/819057.json')
     expect(card.card.column.id).toBe('147456')
   })
+
+  it('adds the "code review" tag to the task', async function () {
+    spyOn(core, 'getInput').and.returnValue(process.env.TW_KEY)
+
+    await putRequest('https://fusionary.teamwork.com/projects/api/v3/tasks/26801523/tags.json', '{"replaceExistingTags": true, "tagIds": [176922]}')
+
+    let tags = await getRequest('https://fusionary.teamwork.com/tasks/26801523/tags.json')
+    expect(tags.tags.find((tag => tag.id == 176922)).id).toBe('176922')
+  })
 })
