@@ -2,12 +2,16 @@ const core = require('@actions/core')
 const github = require('@actions/github')
 const fetch = require('node-fetch')
 
+function getKey() {
+  return Buffer.from(core.getInput('api_key')).toString('base64')
+}
+
 async function getRequest(url) {
   // Sends a GET request to Teamwork
   const getOpts = {
     method: 'GET',
     headers: {
-      'Authorization': `Basic ${core.getInput('api_key')}`,
+      'Authorization': `Basic ${getKey()}`,
       'Accept': 'application/json',
       'Content-Type': 'application/json'
     },
@@ -28,7 +32,7 @@ async function patchRequest(url, body) {
   const patchOpts = {
     method: 'PATCH',
     headers: {
-      'Authorization': `Basic ${core.getInput('api_key')}`,
+      'Authorization': `Basic ${getKey()}`,
       'Accept': 'application/json',
       'Content-Type': 'application/json'
     },
@@ -50,7 +54,7 @@ async function putRequest(url, body) {
   const putOpts = {
     method: 'PUT',
     headers: {
-      'Authorization': `Basic ${core.getInput('api_key')}`,
+      'Authorization': `Basic ${getKey()}`,
       'Accept': 'application/json',
       'Content-Type': 'application/json'
     },
@@ -72,7 +76,7 @@ async function postRequest(url, body) {
   const postOpts = {
     method: 'POST',
     headers: {
-      'Authorization': `Basic ${core.getInput('api_key')}`,
+      'Authorization': `Basic ${getKey()}`,
       'Accept': 'application/json',
       'Content-Type': 'application/json'
     },
