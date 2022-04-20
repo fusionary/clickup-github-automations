@@ -44,7 +44,7 @@ const task = await getRequest(taskUrl)
 // Sends a GET request to Teamwork to find the "code review" tag
 const tagEndpoint = '/projects/api/v3/tags'
 let tagUrl = 'https://' + core.getInput('domain') + tagEndpoint + taskID + '.json?projectIds=0&searchTerm=code review'
-tag = await getRequest(tagUrl)
+const tag = await getRequest(tagUrl)
 if (tag.tags.length > 0) {
   const tagID = tag.tags[0].id
 
@@ -57,12 +57,8 @@ if (tag.tags.length > 0) {
 let columnID = 0
 const boardEndpoint = '/projects/'
 let boardUrl = 'https://' + core.getInput('domain') + boardEndpoint + projectID + '/boards/columns.json'
-columns = await getRequest(boardUrl)
-columns.forEach(column => {
-  if (column.name.toLowerCase() == columnName) {
-    columnID = column.id
-  }
-});
+const columns = await getRequest(boardUrl)
+columnID = columns.find(column => column.name.toLowerCase() == columnName).id
 
 // Check if the task has a card
 if (task.task.card !== null) {
