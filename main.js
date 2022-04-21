@@ -16,7 +16,7 @@ async function moveCard(task, columnName) {
   const boardEndpoint = '/projects/'
   let boardUrl = 'https://' + core.getInput('domain') + boardEndpoint + projectID + '/boards/columns.json'
   const columns = await getRequest(boardUrl)
-  columnID = columns.find(column => column.name.toLowerCase() == columnName).id
+  columnID = columns.columns.find(column => column.name.toLowerCase() == columnName).id
   core.info('Column id: ' + columnID)
 
   // Check if the task has a card
