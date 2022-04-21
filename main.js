@@ -48,6 +48,8 @@ getRequest(taskUrl)
   .then(async task => {
     switch (github.context.action) {
       case 'opened':
+        core.info('PR Opened')  
+      
         // Sends a GET request to Teamwork to find the "code review" tag
         const tagEndpoint = '/projects/api/v3/tags'
         let tagUrl = 'https://' + core.getInput('domain') + tagEndpoint + taskID + '.json?projectIds=0&searchTerm=code review'
@@ -64,10 +66,14 @@ getRequest(taskUrl)
         break;
 
       case 'closed':
+        core.info('PR Opened')  
+      
         moveCard('qa on stg')
         break;
 
       default:
+        core.info('Unrecognized action ' + github.context.action)  
+      
         break;
     }
 
