@@ -46,7 +46,7 @@ const taskEndpoint = '/projects/api/v3/tasks/'
 let taskUrl = 'https://' + core.getInput('domain') + taskEndpoint + taskID + '.json'
 getRequest(taskUrl)
   .then(async task => {
-    switch (github.event.action) {
+    switch (github.context.action) {
       case 'opened':
         // Sends a GET request to Teamwork to find the "code review" tag
         const tagEndpoint = '/projects/api/v3/tags'
@@ -70,6 +70,6 @@ getRequest(taskUrl)
       default:
         break;
     }
-  })
 
-core.info('Successfully updated task')
+  core.info('Successfully updated task')
+  })
