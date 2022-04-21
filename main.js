@@ -13,7 +13,7 @@ async function moveCard(columnName) {
   // Check if the task has a card
   if (task.task.card !== null) {
     // Sends a PUT request to Teamwork to move the card to the "code review" column
-    const cardEndpoint = 'boards/columns/cards/'
+    const cardEndpoint = '/boards/columns/cards/'
     let cardUrl = 'https://' + core.getInput('domain') + cardEndpoint + cardID + 'move.json'
     await putRequest(cardUrl, '{"cardId": ' + task.task.card.id + ',"positionAfterId": 0, "columnId": ' + columnID + '}')
   } else {
