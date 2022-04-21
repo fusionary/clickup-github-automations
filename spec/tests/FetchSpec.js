@@ -43,4 +43,12 @@ describe('test REST request', function () {
     let tags = await getRequest('https://fusionary.teamwork.com/tasks/26801523/tags.json')
     expect(tags.tags.find((tag => tag.id == 176922)).id).toBe('176922')
   })
+
+  it('gets task data using the teamwork v1 api', async function () {
+    spyOn(core, 'getInput').and.returnValue(process.env.TW_KEY)
+    spyOn(console, 'log').and.callThrough()
+
+    let project = await getRequest('https://fusionary.teamwork.com/tasks/26801523.json')
+    expect(project['todo-item']['project-id']).toBe(424228)
+  })
 })

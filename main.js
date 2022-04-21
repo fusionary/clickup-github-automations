@@ -8,8 +8,8 @@ async function moveCard(task, columnName) {
   // Unfortunately, the v3 api doesn't include the project id in the task data like v1 does. Therefor for now, we use the v1 endpoint until this is resolved
   const taskV1Endpoint = '/tasks/'
   let taskV1Url = 'https://' + core.getInput('domain') + taskV1Endpoint + taskID + '.json'
-  const projectID = await getRequest(taskV1Url)
-  core.info(projectID)
+  const project = await getRequest(taskV1Url)
+  let projectID = project['todo-item']['project-id']
 
   let columnID = 0
   const boardEndpoint = '/projects/'
