@@ -10,12 +10,14 @@ async function moveCard(task, columnName) {
   let taskV1Url = 'https://' + core.getInput('domain') + taskV1Endpoint + taskID + '.json'
   const project = await getRequest(taskV1Url)
   let projectID = project['todo-item']['project-id']
+  core.info('Project id: ' + projectID)
 
   let columnID = 0
   const boardEndpoint = '/projects/'
   let boardUrl = 'https://' + core.getInput('domain') + boardEndpoint + projectID + '/boards/columns.json'
   const columns = await getRequest(boardUrl)
   columnID = columns.find(column => column.name.toLowerCase() == columnName).id
+  core.info('Column id: ' + columnID)
 
   // Check if the task has a card
   if (task.task.card !== null) {
