@@ -4,7 +4,7 @@ const {getRequest, patchRequest, putRequest, postRequest} = require('./functions
 
 // Sends a GET request to Teamwork to find the given column
 async function moveCard(task, columnName) {
-  const taskID = task.id
+  const taskID = task.task.id
   // Unfortunately, the v3 api doesn't include the project id in the task data like v1 does. Therefor for now, we use the v1 endpoint until this is resolved
   const taskV1Endpoint = '/tasks/'
   let taskV1Url = 'https://' + core.getInput('domain') + taskV1Endpoint + taskID + '.json'
