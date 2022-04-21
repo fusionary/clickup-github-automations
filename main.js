@@ -51,7 +51,7 @@ getRequest(taskUrl)
         core.info('PR Opened')  
       
         // Sends a GET request to Teamwork to find the "code review" tag
-        const tagEndpoint = '/projects/api/v3/tags'
+        const tagEndpoint = '/projects/api/v3/tags/'
         let tagUrl = 'https://' + core.getInput('domain') + tagEndpoint + taskID + '.json?projectIds=0&searchTerm=code review'
         const tag = await getRequest(tagUrl)
         if (tag.tags.length > 0) {
