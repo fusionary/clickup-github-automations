@@ -46,7 +46,7 @@ const taskEndpoint = '/projects/api/v3/tasks/'
 let taskUrl = 'https://' + core.getInput('domain') + taskEndpoint + taskID + '.json'
 getRequest(taskUrl)
   .then(async task => {
-    switch (github.context.action) {
+    switch (github.context.payload.action) {
       case 'opened':
         core.info('PR Opened')  
       
