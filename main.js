@@ -71,13 +71,13 @@ getRequest(taskUrl)
           await putRequest(taskTagUrl, `{"replaceExistingTags": false, "tagIds": [${tagID}]}`)
         }
 
-        moveCard(taskID, 'code review')
+        moveCard(task, 'code review')
         break;
 
       case 'closed':
         core.info('PR Opened')  
       
-        moveCard(taskID, 'qa on stg')
+        moveCard(task, 'qa on stg')
         break;
 
       default:
