@@ -2,8 +2,14 @@ const core = require('@actions/core')
 const github = require('@actions/github')
 const {getRequest, patchRequest, putRequest, postRequest} = require('./functions.js')
 
-async function moveCard(columnName) {
-  // Sends a GET request to Teamwork to find the "qa on staging" column
+// Sends a GET request to Teamwork to find the given column
+async function moveCard(task, columnName) {
+  const taskID = task.id
+  // Unfortunately, the v3 api doesn't include the project id in the task data like v1 does. Therefor for now, we use the v1 endpoint until this is resolved
+  const taskV1Endpoint = '/tasks/'
+  let taskV1Url = 'https://' + core.getInput('domain') + taskV1Endpoint + taskID + '.json'
+  const projectID = await getRequest(taskV1Url)['project-id']
+
   let columnID = 0
   const boardEndpoint = '/projects/'
   let boardUrl = 'https://' + core.getInput('domain') + boardEndpoint + projectID + '/boards/columns.json'
@@ -62,13 +68,13 @@ getRequest(taskUrl)
           await putRequest(taskTagUrl, `{"replaceExistingTags": false, "tagIds": [${tagID}]}`)
         }
 
-        moveCard('code review')
+        moveCard(taskID, 'code review')
         break;
 
       case 'closed':
         core.info('PR Opened')  
       
-        moveCard('qa on stg')
+        moveCard(taskID, 'qa on stg')
         break;
 
       default:
