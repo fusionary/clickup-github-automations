@@ -19,10 +19,11 @@ async function moveCard(task, columnName) {
   columnID = columns.columns.find(column => column.name.toLowerCase() == columnName).id
   core.info('Column id: ' + columnID)
 
+  const cardID = task.task.card.id
+  
   // Check if the task has a card
   if (task.task.card !== null) {
     // Sends a PUT request to Teamwork to move the card to the "code review" column
-    const cardID = task.task.card.id
     const cardEndpoint = '/boards/columns/cards/'
     let cardUrl = 'https://' + core.getInput('domain') + cardEndpoint + cardID + '/move.json'
     await putRequest(cardUrl, '{"cardId": ' + cardID + ',"positionAfterId": 0, "columnId": ' + columnID + '}')
