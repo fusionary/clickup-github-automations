@@ -39,7 +39,8 @@ if (!taskID) {
   // No task override. Look for task id in PR description
   const prBody = github.context.payload.pull_request?.body
   if (prBody) {
-    taskID = prBody.slice(0, prBody.indexOf('\n')).replace('#', '')
+    const bodyEnd = prBody.indexOf('\n') == -1 ? prBody.length : prBody.indexOf('\n')
+    taskID = prBody.slice(0, bodyEnd).replace('#', '')
     // If there's no description or the first line isn't a task id
     if (taskID === '' || isNaN(parseInt(taskID))) {
       // Description may have been intentionally left empty or not include
