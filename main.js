@@ -60,29 +60,37 @@ const taskEndpoint = '/projects/api/v3/tasks/'
 let taskUrl = 'https://' + core.getInput('domain') + taskEndpoint + taskID + '.json'
 getRequest(taskUrl)
   .then(async task => {
+    // Sends a GET request to Teamwork to find the "code review" tag
+    const tagID = 0;
+    const tagEndpoint = '/projects/api/v3/tags'
+    let tagUrl = 'https://' + core.getInput('domain') + tagEndpoint + '.json?projectIds=0&searchTerm=code review'
+    const tag = await getRequest(tagUrl)
+    if (tag.tags.length > 0) {
+      tagID = tag.tags[0].id
+    }
+    
     switch (github.context.payload.action) {
       case 'opened':
-        core.info('PR Opened')  
-      
-        // Sends a GET request to Teamwork to find the "code review" tag
-        const tagEndpoint = '/projects/api/v3/tags'
-        let tagUrl = 'https://' + core.getInput('domain') + tagEndpoint + '.json?projectIds=0&searchTerm=code review'
-        const tag = await getRequest(tagUrl)
-        if (tag.tags.length > 0) {
-          const tagID = tag.tags[0].id
+        core.info('PR Opened')
 
-          // Sends a PUT request to Teamwork to add the "code review" tag to the task
-          let taskTagUrl = 'https://' + core.getInput('domain') + taskEndpoint + taskID + '/tags.json'
-          await putRequest(taskTagUrl, `{"replaceExistingTags": false, "tagIds": [${tagID}]}`)
-        }
+        // Sends a PUT request to Teamwork to add the "code review" tag to the task
+        let taskTagUrl = 'https://' + core.getInput('domain') + taskEndpoint + taskID + '/tags.json'
+        await putRequest(taskTagUrl, `{"replaceExistingTags": false, "tagIds": [${tagID}]}`)
 
         moveCard(task, 'code review')
+        
         break;
 
       case 'closed':
-        core.info('PR Opened')  
+        core.info('PR Closed')  
       
+        // Removes the "code review" tag from the task
+        // TODO: Update this when it's added to v3 API
+        let removeTagUrl = 'https://' + core.getInput('domain') + '/task/' + taskID + '/tags.json'
+        await putRequest(removeTagUrl, `{"removeProvidedTags": true, "tags":{"content": "Code Review"}}`)
+
         moveCard(task, 'qa on stg')
+
         break;
 
       default:
