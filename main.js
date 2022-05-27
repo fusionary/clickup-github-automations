@@ -61,7 +61,7 @@ let taskUrl = 'https://' + core.getInput('domain') + taskEndpoint + taskID + '.j
 getRequest(taskUrl)
   .then(async task => {
     // Sends a GET request to Teamwork to find the "code review" tag
-    const tagID = 0;
+    let tagID = 0;
     const tagEndpoint = '/projects/api/v3/tags'
     let tagUrl = 'https://' + core.getInput('domain') + tagEndpoint + '.json?projectIds=0&searchTerm=code review'
     const tag = await getRequest(tagUrl)
