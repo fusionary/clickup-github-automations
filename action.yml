@@ -1,6 +1,6 @@
-name: 'PRs Close Teamwork Tasks'
+name: 'PRs Update Teamwork Tasks'
 author: 'Bob VanLonkhuyzen'
-description: 'An Action to mark a Teamwork task as complete when its PR is merged'
+description: 'An Action to update a Teamwork task column and tags when its PR is merged'
 inputs:
   task_id:
     description: The ID of the task to mark as complete in Teamwork

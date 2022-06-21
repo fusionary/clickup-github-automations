@@ -1,5 +1,6 @@
 const core = require('@actions/core')
 const github = require('@actions/github')
+const { GitHub } = require('@actions/github/lib/utils')
 const {getRequest, patchRequest, putRequest, postRequest} = require('./functions.js')
 
 // Sends a GET request to Teamwork to find the given column
@@ -34,15 +35,22 @@ async function moveCard(task, columnName) {
   }
 }
 
-let taskID = core.getInput('task_id')
-if (!taskID) {
+let taskIDs = [core.getInput('task_id')]
+if (!taskIDs) {
   // No task override. Look for task id in PR description
+  taskIDs = []
   const prBody = github.context.payload.pull_request?.body
   if (prBody) {
-    const bodyEnd = prBody.indexOf('\n') == -1 ? prBody.length : prBody.indexOf('\n')
-    taskID = prBody.slice(0, bodyEnd).replace('#', '')
+    const bodyLines = prBody.split('\n')
+    bodyLines.forEach(line => {
+      matches = line.match(`https://fusionary\.teamwork\.com/#/tasks/(\d+)`)
+      if (matches.length == 2) {
+        taskIDs.push(matches[1])
+      }
+    })
+
     // If there's no description or the first line isn't a task id
-    if (taskID === '' || isNaN(parseInt(taskID))) {
+    if (taskIDs.length === 0) {
       // Description may have been intentionally left empty or not include
       // a task id. Exit with success code
       process.exit(0)
@@ -53,51 +61,53 @@ if (!taskID) {
   }
 }
 
-core.info('Found task ID ' + taskID)
+core.info('Found task ID(s) ' + taskIDs)
 
-// Sends a GET request to Teamwork to retrieve info about the task
-const taskEndpoint = '/projects/api/v3/tasks/'
-let taskUrl = 'https://' + core.getInput('domain') + taskEndpoint + taskID + '.json'
-getRequest(taskUrl)
-  .then(async task => {
-    // Sends a GET request to Teamwork to find the "code review" tag
-    let tagID = 0;
-    const tagEndpoint = '/projects/api/v3/tags'
-    let tagUrl = 'https://' + core.getInput('domain') + tagEndpoint + '.json?projectIds=0&searchTerm=code review'
-    const tag = await getRequest(tagUrl)
-    if (tag.tags.length > 0) {
-      tagID = tag.tags[0].id
-    }
-    
-    switch (github.context.payload.action) {
-      case 'opened':
-        core.info('PR Opened')
+taskIDs.forEach(taskID => {
+  // Sends a GET request to Teamwork to retrieve info about the task
+  const taskEndpoint = '/projects/api/v3/tasks/'
+  let taskUrl = 'https://' + core.getInput('domain') + taskEndpoint + taskID + '.json'
+  getRequest(taskUrl)
+    .then(async task => {
+      // Sends a GET request to Teamwork to find the "code review" tag
+      let tagID = 0;
+      const tagEndpoint = '/projects/api/v3/tags'
+      let tagUrl = 'https://' + core.getInput('domain') + tagEndpoint + '.json?projectIds=0&searchTerm=code review'
+      const tag = await getRequest(tagUrl)
+      if (tag.tags.length > 0) {
+        tagID = tag.tags[0].id
+      }
+      
+      switch (github.context.payload.action) {
+        case 'opened':
+          core.info('PR Opened')
 
-        // Sends a PUT request to Teamwork to add the "code review" tag to the task
-        let taskTagUrl = 'https://' + core.getInput('domain') + taskEndpoint + taskID + '/tags.json'
-        await putRequest(taskTagUrl, `{"replaceExistingTags": false, "tagIds": [${tagID}]}`)
+          // Sends a PUT request to Teamwork to add the "code review" tag to the task
+          let taskTagUrl = 'https://' + core.getInput('domain') + taskEndpoint + taskID + '/tags.json'
+          await putRequest(taskTagUrl, `{"replaceExistingTags": false, "tagIds": [${tagID}]}`)
 
-        moveCard(task, 'code review')
+          moveCard(task, 'code review')
+          
+          break;
+
+        case 'closed':
+          core.info('PR Closed')  
         
-        break;
+          // Removes the "code review" tag from the task
+          // TODO: Update this when it's added to v3 API
+          let removeTagUrl = 'https://' + core.getInput('domain') + '/task/' + taskID + '/tags.json'
+          await putRequest(removeTagUrl, `{"removeProvidedTags": true, "tags":{"content": "Code Review"}}`)
 
-      case 'closed':
-        core.info('PR Closed')  
-      
-        // Removes the "code review" tag from the task
-        // TODO: Update this when it's added to v3 API
-        let removeTagUrl = 'https://' + core.getInput('domain') + '/task/' + taskID + '/tags.json'
-        await putRequest(removeTagUrl, `{"removeProvidedTags": true, "tags":{"content": "Code Review"}}`)
+          moveCard(task, 'qa on stg')
 
-        moveCard(task, 'qa on stg')
+          break;
 
-        break;
+        default:
+          core.info('Unrecognized action ' + github.context.action)  
+        
+          break;
+      }
 
-      default:
-        core.info('Unrecognized action ' + github.context.action)  
-      
-        break;
-    }
-
-  core.info('Successfully updated task')
-  })
+    core.info('Successfully updated task ' + taskID)
+    })
+})
