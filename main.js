@@ -43,8 +43,11 @@ if (!taskIDs) {
   if (prBody) {
     const bodyLines = prBody.split('\n')
     bodyLines.forEach(line => {
-      matches = line.match(`https://fusionary\.teamwork\.com/#/tasks/(\d+)`)
-      if (matches.length == 2) {
+      console.log(line)
+      const regex = /https:\/\/fusionary\.teamwork\.com\/#\/tasks\/(\d+)/
+      console.log(regex)
+      let matches = line.match(regex)
+      if (matches?.length == 2) {
         taskIDs.push(matches[1])
       }
     })
