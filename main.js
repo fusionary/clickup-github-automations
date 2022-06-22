@@ -35,17 +35,15 @@ async function moveCard(task, columnName) {
   }
 }
 
-let taskIDs = [core.getInput('task_id')]
-if (!taskIDs) {
+let taskIDs = []
+if (!core.getInput('task_id')) {
   // No task override. Look for task id in PR description
-  taskIDs = []
   const prBody = github.context.payload.pull_request?.body
   if (prBody) {
     const bodyLines = prBody.split('\n')
     bodyLines.forEach(line => {
       console.log(line)
       const regex = /https:\/\/fusionary\.teamwork\.com\/#\/tasks\/(\d+)/
-      console.log(regex)
       let matches = line.match(regex)
       if (matches?.length == 2) {
         taskIDs.push(matches[1])
@@ -62,6 +60,8 @@ if (!taskIDs) {
     core.setFailed('Could not retrieve PR body')
     process.exit(0)
   }
+} else {
+  taskIDs = [core.getInput('task_id')]
 }
 
 core.info('Found task ID(s) ' + taskIDs)
