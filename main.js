@@ -35,7 +35,7 @@ core.info('Found task ID(s) ' + taskIDs)
 
 taskIDs.forEach(taskID => {
   // Sends a GET request to ClickUp to retrieve info about the task
-  const taskEndpoint = '/api/v2/task/'
+  const taskEndpoint = 'api/v2/task'
   let taskUrl = 'https://api.clickup.com' + taskEndpoint + taskID
   getRequest(taskUrl)
     .then(async task => {
@@ -44,7 +44,7 @@ taskIDs.forEach(taskID => {
         field => field.name == 'Dev Phases' && field.type == 'drop_down'
       )
 
-      const taskCustomFieldUrl = 'https://api.clickup.com' + taskEndpoint + taskID + '/field' + devPhaseField.id
+      const taskCustomFieldUrl = `https://api.clickup.com/${taskEndpoint}/${taskID}/field/${devPhaseField.id}`
       
       switch (github.context.payload.action) {
         case 'opened':
@@ -58,6 +58,23 @@ taskIDs.forEach(taskID => {
           // Sends a POST request to ClickUp to set the task dev phase to "code review"
           await postRequest(taskCustomFieldUrl, `{"value": "${codeReview.id}"}`)
           
+          const commentUrl = `https://api.clickup.com/${taskEndpoint}/${taskID}/comment`
+          await postRequest(commentUrl, `{
+            "comment": [
+                {
+                    "text": "This task is ready for code review\n",
+                    "attributes": {}
+                },
+                {
+                    "text": "${github.context.payload.pull_request.html_url}",
+                    "attributes": {
+                        "link": "${github.context.payload.pull_request.html_url}"
+                    }
+                }
+            ],
+            "notify_all": false
+          }`)
+
           break;
 
         case 'closed':
