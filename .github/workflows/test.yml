@@ -11,8 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: fusionary/pr-teamwork-task-tag-and-move-card@main
+    - uses: fusionary/clickup-github-automations@main
       with:
-        task_id: 26801523
-        domain: fusionary.teamwork.com
-        api_key: ${{ secrets.TEAMWORK_API_KEY }}
+        task_id: 2q3c5gk
+        api_key: ${{ secrets.CLICKUP_API_KEY }}

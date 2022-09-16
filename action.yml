@@ -1,15 +1,12 @@
-name: 'PRs Update Teamwork Tasks'
+name: 'ClickUp GitHub Automations'
 author: 'Bob VanLonkhuyzen'
-description: 'An Action to update a Teamwork task column and tags when its PR is merged'
+description: 'A collection of GitHub Actions to automate ClickUp events'
 inputs:
   task_id:
-    description: The ID of the task to mark as complete in Teamwork
+    description: The ID of the task to update in ClickUp
     required: false
-  domain:
-    description: The domain of your Teamwork site. Follows the format <company>.teamwork.com for US sites, or <company>.eu.teamwork.com for EU sites
-    required: true
   api_key:
-    description: Your Teamwork API key
+    description: Your ClickUp API key
     required: true
 branding:
   icon: 'check-circle'
