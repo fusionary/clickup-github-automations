@@ -58,6 +58,13 @@ taskIDs.forEach(taskID => {
           // Sends a POST request to ClickUp to set the task dev phase to "code review"
           await postRequest(taskCustomFieldUrl, `{"value": "${codeReview.id}"}`)
           
+          // Assign a comment to the first person assigned to code review in GitHub
+          const teamUrl = 'https://api.clickup.com/api/v2/team'
+          getRequest(teamUrl).then(async team => {
+            const asignee = team.teams[0].members.find(
+              member => member.user.username == github.context.payload.pull_request.requested_reviewers
+            )
+          })
           const commentUrl = `https://api.clickup.com/${taskEndpoint}/${taskID}/comment`
           await postRequest(commentUrl, `{
             "comment": [
