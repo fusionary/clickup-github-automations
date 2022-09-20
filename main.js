@@ -54,6 +54,8 @@ taskIDs.forEach(taskID => {
           const codeReview = devPhaseField.type_config.options.find(
             option => option.name == 'Code Review'
           )
+          core.info(taskCustomFieldUrl)
+          core.info(codeReview)
 
           // Sends a POST request to ClickUp to set the task dev phase to "code review"
           await postRequest(taskCustomFieldUrl, `{"value": "${codeReview.id}"}`)
