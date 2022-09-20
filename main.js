@@ -59,21 +59,21 @@ taskIDs.forEach(taskID => {
           await postRequest(taskCustomFieldUrl, `{"value": "${codeReview.id}"}`)
           
           const commentUrl = `${taskUrl}/comment`
-          await postRequest(commentUrl, JSON.stringify(`{
+          await postRequest(commentUrl, JSON.stringify({
             "comment": [
                 {
                     "text": "This task is ready for code review\n",
                     "attributes": {}
                 },
                 {
-                    "text": "${github.context.payload.pull_request.html_url}",
+                    "text": github.context.payload.pull_request.html_url,
                     "attributes": {
-                        "link": "${github.context.payload.pull_request.html_url}"
+                        "link": github.context.payload.pull_request.html_url
                     }
                 }
             ],
             "notify_all": false
-          }`))
+          }))
 
           break;
 
