@@ -3,7 +3,7 @@ const github = require('@actions/github')
 const fetch = require('node-fetch')
 
 function getKey() {
-  return Buffer.from(core.getInput('api_key')).toString('base64')
+  return core.getInput('api_key')
 }
 
 async function getRequest(url) {
