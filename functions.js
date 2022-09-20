@@ -11,7 +11,7 @@ async function getRequest(url) {
   const getOpts = {
     method: 'GET',
     headers: {
-      'Authorization': `Basic ${getKey()}`,
+      'Authorization': getKey(),
       'Accept': 'application/json',
       'Content-Type': 'application/json'
     },
@@ -32,7 +32,7 @@ async function patchRequest(url, body) {
   const patchOpts = {
     method: 'PATCH',
     headers: {
-      'Authorization': `Basic ${getKey()}`,
+      'Authorization': getKey(),
       'Accept': 'application/json',
       'Content-Type': 'application/json'
     },
@@ -54,7 +54,7 @@ async function putRequest(url, body) {
   const putOpts = {
     method: 'PUT',
     headers: {
-      'Authorization': `Basic ${getKey()}`,
+      'Authorization': getKey(),
       'Accept': 'application/json',
       'Content-Type': 'application/json'
     },
@@ -76,7 +76,7 @@ async function postRequest(url, body) {
   const postOpts = {
     method: 'POST',
     headers: {
-      'Authorization': `Basic ${getKey()}`,
+      'Authorization': getKey(),
       'Accept': 'application/json',
       'Content-Type': 'application/json'
     },
