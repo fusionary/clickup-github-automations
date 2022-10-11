@@ -1,54 +1,47 @@
-const {getRequest, putRequest} = require('../../functions.js')
+const {getRequest, postRequest} = require('../../functions.js')
 const core = require('@actions/core')
 require('dotenv').config()
 
 describe('test REST request', function () {
 
-  it('gets a tag from teamwork using a search term', async function() {
-    spyOn(core, 'getInput').and.returnValue(process.env.TW_KEY)
+  it('gets task', async function() {
+    spyOn(core, 'getInput').and.returnValue(process.env.CLICKUP_API_KEY)
     spyOn(console, 'log').and.callThrough()
 
-    let tag = await getRequest('https://fusionary.teamwork.com/projects/api/v3/tags.json?projectIds=0&searchTerm=estimate')
-    expect(tag.tags[0].id).toBe(81729)
+    let task = await getRequest('https://api.clickup.com/api/v2/task/2q3c5gk')
+    expect(task.name).toBe('Test task')
+    expect(task.date_created).toBe('1659187664187')
   })
 
-  it('moves a task to the "released" column', async function () {
-    spyOn(core, 'getInput').and.returnValue(process.env.TW_KEY)
+  it('moves a task to the "In Progress" column', async function () {
+    spyOn(core, 'getInput').and.returnValue(process.env.CLICKUP_API_KEY)
     spyOn(console, 'log').and.callThrough()
 
-    let res = await putRequest('https://fusionary.teamwork.com/boards/columns/cards/819057/move.json', '{"cardId": 819057,"positionAfterId": 0,"columnId": 147457}')
-    expect(res.STATUS).toBe("OK")
+    let res = await postRequest('https://test.clickup.com/api/v2/task/2q3c5gk/field/406487e2-4f0d-4ea7-a50a-2b1cb25cb2c2', '{"value": "ccf86cb1-0544-4690-acb9-07ac29ed9780"}')
+    expect(res.status).not.toThrowError
 
-    let card = await getRequest('https://fusionary.teamwork.com/boards/columns/cards/819057.json')
-    expect(card.card.column.id).toBe('147457')
+    let task = await getRequest('https://api.clickup.com/api/v2/task/2q3c5gk')
+    expect(task.custom_fields.find(field => field.name == 'Dev Phases').value).toBe(2)
   })
 
-  it('moves a task to the "in progress" column', async function () {
-    spyOn(core, 'getInput').and.returnValue(process.env.TW_KEY)
+  it('moves a task to the "To Do" column', async function () {
+    spyOn(core, 'getInput').and.returnValue(process.env.CLICKUP_API_KEY)
     spyOn(console, 'log').and.callThrough()
 
-    let res = await putRequest('https://fusionary.teamwork.com/boards/columns/cards/819057/move.json', '{"cardId": 819057,"positionAfterId": 0,"columnId": 147456}')
-    expect(res.STATUS).toBe("OK")
+    let res = await postRequest('https://test.clickup.com/api/v2/task/2q3c5gk/field/406487e2-4f0d-4ea7-a50a-2b1cb25cb2c2', '{"value": "1bedec11-e96a-4d85-a7d9-d2dd4bb537df"}')
+    expect(res.status).not.toThrowError
 
-    let card = await getRequest('https://fusionary.teamwork.com/boards/columns/cards/819057.json')
-    expect(card.card.column.id).toBe('147456')
+    let task = await getRequest('https://api.clickup.com/api/v2/task/2q3c5gk')
+    expect(task.custom_fields.find(field => field.name == 'Dev Phases').value).toBe(0)
   })
 
-  it('adds the "code review" tag to the task', async function () {
-    spyOn(core, 'getInput').and.returnValue(process.env.TW_KEY)
-    spyOn(console, 'log').and.callThrough()
+  // it('adds the "code review" tag to the task', async function () {
+  //   spyOn(core, 'getInput').and.returnValue(process.env.CLICKUP_API_KEY)
+  //   spyOn(console, 'log').and.callThrough()
 
-    await putRequest('https://fusionary.teamwork.com/projects/api/v3/tasks/26801523/tags.json', '{"replaceExistingTags": true, "tagIds": [176922]}')
+  //   await putRequest('https://app.clickup.com/projects/api/v3/tasks/26801523/tags.json', '{"replaceExistingTags": true, "tagIds": [176922]}')
 
-    let tags = await getRequest('https://fusionary.teamwork.com/tasks/26801523/tags.json')
-    expect(tags.tags.find((tag => tag.id == 176922)).id).toBe('176922')
-  })
-
-  it('gets task data using the teamwork v1 api', async function () {
-    spyOn(core, 'getInput').and.returnValue(process.env.TW_KEY)
-    spyOn(console, 'log').and.callThrough()
-
-    let project = await getRequest('https://fusionary.teamwork.com/tasks/26801523.json')
-    expect(project['todo-item']['project-id']).toBe(424228)
-  })
+  //   let tags = await getRequest('https://app.clickup.com/tasks/26801523/tags.json')
+  //   expect(tags.tags.find((tag => tag.id == 176922)).id).toBe('176922')
+  // })
 })
