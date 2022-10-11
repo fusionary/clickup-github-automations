@@ -12,9 +12,8 @@ if (!core.getInput('task_id')) {
     bodyLines.forEach(line => {
       const regex = /https:\/\/(app|fusionary)\.clickup\.com\/t\/(\w+)/
       let matches = line.match(regex)
-      core.info(matches)
-      if (matches?.length == 2) {
-        taskIDs.push(matches[1])
+      if (matches?.length == 3) {
+        taskIDs.push(matches[2])
       }
     })
 
