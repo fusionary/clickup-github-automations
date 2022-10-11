@@ -1,22 +1,22 @@
 {
-  "name": "pr-close-teamwork-task",
+  "name": "clickup-github-automation",
   "version": "0.1.0",
-  "description": "An Action to mark a Teamwork task as complete when its PR is merged",
+  "description": "An action to move tasks and comment status updates",
   "main": "main.js",
   "scripts": {
     "test": "jasmine"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Aetheron/pr-close-teamwork-task.git"
+    "url": "git+https://github.com/fusionary/clickup-github-automations.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Aetheron/pr-close-teamwork-task/issues"
+    "url": "https://github.com/fusionary/clickup-github-automations/issues"
   },
-  "homepage": "https://github.com/Aetheron/pr-close-teamwork-task#readme",
+  "homepage": "https://github.com/fusionary/clickup-github-automations#readme",
   "dependencies": {
     "@actions/core": "^1.6.0",
     "@actions/github": "^5.0.0",
