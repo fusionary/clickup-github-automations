@@ -10,7 +10,7 @@ if (!core.getInput('task_id')) {
   if (prBody) {
     const bodyLines = prBody.split('\n')
     bodyLines.forEach(line => {
-      const regex = /https:\/\/app\.clickup\.com\/t\/(\w+)/
+      const regex = /https:\/\/(app|fusionary)\.clickup\.com\/t\/(\w+)/
       let matches = line.match(regex)
       if (matches?.length == 2) {
         taskIDs.push(matches[1])
