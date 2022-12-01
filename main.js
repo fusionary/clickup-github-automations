@@ -1,21 +1,14 @@
 const core = require('@actions/core')
 const github = require('@actions/github')
 const { GitHub } = require('@actions/github/lib/utils')
-const {getRequest, getTeamId, getUrlWithQueryString, patchRequest, putRequest, postRequest} = require('./functions.js')
+const {getRequest, getTaskIdsFromBody, getTeamId, getUrlWithQueryString, postRequest} = require('./functions.js')
 
 let taskIDs = []
 if (!core.getInput('task_id')) {
   // No task override. Look for task id in PR description
   const prBody = github.context.payload.pull_request?.body
   if (prBody) {
-    const bodyLines = prBody.split('\n')
-    bodyLines.forEach(line => {
-      const regex = /https:\/\/(app|fusionary)\.clickup\.com\/t\/(\w+)/
-      let matches = line.match(regex)
-      if (matches?.length == 3) {
-        taskIDs.push(matches[2])
-      }
-    })
+    taskIDs = getTaskIdsFromBody(prBody);
 
     // If there's no description or the first line isn't a task id
     if (taskIDs.length === 0) {
@@ -30,8 +23,6 @@ if (!core.getInput('task_id')) {
 } else {
   taskIDs = [core.getInput('task_id')]
 }
-
-core.info('Found task ID(s) ' + taskIDs)
 
 taskIDs.forEach(taskID => {
   // Sends a GET request to ClickUp to retrieve info about the task
