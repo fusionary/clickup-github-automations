@@ -8,6 +8,11 @@ inputs:
   api_key:
     description: Your ClickUp API key
     required: true
+  team_id:
+    description: ClickUp team ID for custom task IDs.
+    required: false
+    default: 25630900
+    
 branding:
   icon: 'check-circle'
   color: 'purple'
