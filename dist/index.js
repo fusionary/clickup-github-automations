@@ -10806,10 +10806,10 @@ taskIDs.forEach(taskID => {
           )
 
           // Sends a POST request to ClickUp to set the task dev phase to "code review"
-          await postRequest(taskCustomFieldUrl, `{"value": "${codeReview.id}"}`)
+          await postRequest(getUrlWithQueryString(taskCustomFieldUrl, queryString), `{"value": "${codeReview.id}"}`)
           
           const commentUrl = `${taskUrl}/comment`
-          await postRequest(geturlWithQueryString(commentUrl, queryString), JSON.stringify({
+          await postRequest(getUrlWithQueryString(commentUrl, queryString), JSON.stringify({
             "comment": [
                 {
                     "text": "This task is ready for code review\n",
