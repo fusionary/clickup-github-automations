@@ -19,7 +19,7 @@ function getTeamId() {
 
 function getUrlWithQueryString(baseUrl, queryString) {
   const queryStringParams = Object.assign({}, queryString)
-  return `${baseUrl}/${qs.stringify(queryStringParams)}`
+  return `${baseUrl}?${qs.stringify(queryStringParams)}`
 }
 
 function getTaskIdsFromBody(body) {
@@ -10775,6 +10775,8 @@ if (!core.getInput('task_id')) {
 } else {
   taskIDs = [core.getInput('task_id')]
 }
+
+core.info('Found task ID(s) ' + taskIDs)
 
 taskIDs.forEach(taskID => {
   // Sends a GET request to ClickUp to retrieve info about the task
