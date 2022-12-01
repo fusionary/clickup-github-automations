@@ -24,6 +24,8 @@ if (!core.getInput('task_id')) {
   taskIDs = [core.getInput('task_id')]
 }
 
+core.info('Found task ID(s) ' + taskIDs)
+
 taskIDs.forEach(taskID => {
   // Sends a GET request to ClickUp to retrieve info about the task
   const taskEndpoint = 'api/v2/task'

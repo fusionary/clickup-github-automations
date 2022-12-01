@@ -13,7 +13,7 @@ function getTeamId() {
 
 function getUrlWithQueryString(baseUrl, queryString) {
   const queryStringParams = Object.assign({}, queryString)
-  return `${baseUrl}/${qs.stringify(queryStringParams)}`
+  return `${baseUrl}?${qs.stringify(queryStringParams)}`
 }
 
 function getTaskIdsFromBody(body) {
