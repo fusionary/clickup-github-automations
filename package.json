@@ -24,6 +24,7 @@
     "qs": "^6.11.0"
   },
   "devDependencies": {
+    "@vercel/ncc": "^0.34.0",
     "jasmine": "^4.0.2"
   }
 }
