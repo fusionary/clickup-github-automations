@@ -1,7 +1,7 @@
 const core = require('@actions/core')
 const github = require('@actions/github')
 const { GitHub } = require('@actions/github/lib/utils')
-const {getRequest, patchRequest, putRequest, postRequest} = require('./functions.js')
+const {getRequest, getTeamId, getUrlWithQueryString, patchRequest, putRequest, postRequest} = require('./functions.js')
 
 let taskIDs = []
 if (!core.getInput('task_id')) {
@@ -37,7 +37,12 @@ taskIDs.forEach(taskID => {
   // Sends a GET request to ClickUp to retrieve info about the task
   const taskEndpoint = 'api/v2/task'
   let taskUrl = `https://api.clickup.com/${taskEndpoint}/${taskID}`
-  getRequest(taskUrl)
+  const queryString = taskID.includes('-') ? {
+    custom_task_ids: true,
+    team_id: getTeamId(),
+  } : {}
+
+  getRequest(getUrlWithQueryString(taskUrl, queryString))
     .then(async task => {
       // Task data contains options for custom field "Dev Phase"
       const devPhaseField = task.custom_fields.find(
@@ -59,7 +64,7 @@ taskIDs.forEach(taskID => {
           await postRequest(taskCustomFieldUrl, `{"value": "${codeReview.id}"}`)
           
           const commentUrl = `${taskUrl}/comment`
-          await postRequest(commentUrl, JSON.stringify({
+          await postRequest(geturlWithQueryString(commentUrl, queryString), JSON.stringify({
             "comment": [
                 {
                     "text": "This task is ready for code review\n",
@@ -86,7 +91,7 @@ taskIDs.forEach(taskID => {
           )
 
           // Sends a POST request to ClickUp to set the task dev phase to "QA"
-          await postRequest(taskCustomFieldUrl, `{"value": "${qa.id}"}`)
+          await postRequest(getUrlWithQueryString(taskCustomFieldUrl, queryString), `{"value": "${qa.id}"}`)
 
           break;
 

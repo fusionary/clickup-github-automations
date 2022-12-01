@@ -1,9 +1,19 @@
 const core = require('@actions/core')
 const github = require('@actions/github')
 const fetch = require('node-fetch')
+const qs = require('qs')
 
 function getKey() {
   return core.getInput('api_key')
+}
+
+function getTeamId() {
+  return core.getInput('team_id') || 25630900
+}
+
+function getUrlWithQueryString(baseUrl, queryString) {
+  const queryStringParams = Object.assign({}, queryString)
+  return `${baseUrl}/${qs.stringify(queryStringParams)}`
 }
 
 async function getRequest(url) {
@@ -93,4 +103,4 @@ async function postRequest(url, body) {
   }
 }
 
-module.exports = {getRequest, patchRequest, putRequest, postRequest}
+module.exports = {getRequest, getTeamId, getUrlWithQueryString, patchRequest, putRequest, postRequest}
