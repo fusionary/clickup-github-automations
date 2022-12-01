@@ -11,7 +11,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: fusionary/clickup-github-automations@main
+    - uses: actions/checkout@v3
+    - uses: ./
       with:
         task_id: 2q3c5gk
         api_key: ${{ secrets.CLICKUP_API_KEY }}
