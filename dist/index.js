@@ -10753,7 +10753,7 @@ var __webpack_exports__ = {};
 const core = __nccwpck_require__(2186)
 const github = __nccwpck_require__(5438)
 const { GitHub } = __nccwpck_require__(3030)
-const {getRequest, getTaskIdsFromBody, getTeamId, getUrlWithQueryString, postRequest} = __nccwpck_require__(3505)
+const { getRequest, getTaskIdsFromBody, getTeamId, getUrlWithQueryString, postRequest } = __nccwpck_require__(3505)
 
 let taskIDs = []
 if (!core.getInput('task_id')) {
@@ -10791,8 +10791,13 @@ taskIDs.forEach(taskID => {
     .then(async task => {
       // Task data contains options for custom field "Dev Phase"
       const devPhaseField = task.custom_fields.find(
-        field => field.name == 'Dev Phases' && field.type == 'drop_down'
+        field => field.id?.toLowerCase() === '406487e2-4f0d-4ea7-a50a-2b1cb25cb2c2'
       )
+
+      if (!devPhaseField) {
+        core.info('Unable to find custom field.')
+        return
+      }
 
       const taskCustomFieldUrl = `${taskUrl}/field/${devPhaseField.id}`
       
@@ -10802,8 +10807,12 @@ taskIDs.forEach(taskID => {
 
           // Get the "Code Review" dev phase
           const codeReview = devPhaseField.type_config.options.find(
-            option => option.name == 'Code Review'
+            option => option.id?.toLowerCase() === '0f948d08-f409-43fe-9c8d-c2da7761619e'
           )
+
+          if (!codeReview) {
+            core.setFailed('Unable to find the Code Review phase ID.')
+          }
 
           // Sends a POST request to ClickUp to set the task dev phase to "code review"
           await postRequest(getUrlWithQueryString(taskCustomFieldUrl, queryString), `{"value": "${codeReview.id}"}`)
@@ -10832,8 +10841,12 @@ taskIDs.forEach(taskID => {
         
           // Get the "QA" dev phase
           const qa = devPhaseField.type_config.options.find(
-            option => option.name == 'QA'
+            option => option.id?.toLowerCase() === '45c66e3d-cb69-4109-bb39-73f0d29b3f5f'
           )
+
+          if (!qa) {
+            core.setFailed('Unable to find the QA phase ID.')
+          }
 
           // Sends a POST request to ClickUp to set the task dev phase to "QA"
           await postRequest(getUrlWithQueryString(taskCustomFieldUrl, queryString), `{"value": "${qa.id}"}`)
@@ -10846,7 +10859,7 @@ taskIDs.forEach(taskID => {
           break;
       }
 
-    core.info('Successfully updated task ' + taskID)
+      core.info('Successfully updated task ' + taskID)
     })
 })
 
